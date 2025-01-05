@@ -4,18 +4,20 @@ set -euo pipefail
 
 print_usage() {
   cat << EOF
-Usage: subs <command> <URL>
+Usage: subs <command> [options] <URL>
 
 Commands:
   dl      Download and extract subtitles from a video
   clean   Download and clean up subtitles using OpenAI
 
 Options:
-  -h, --help     Show this help message
+  -h, --help            Show this help message
+  -m, --model MODEL     Specify OpenAI model (default: gpt-4o-mini)
 
 Examples:
-  subs dl "https://www.youtube.com/live/DQacCB9tDaw"
-  subs clean "https://www.youtube.com/live/DQacCB9tDaw"
+  subs dl https://www.youtube.com/live/DQacCB9tDaw
+  subs clean https://www.youtube.com/live/DQacCB9tDaw
+  subs clean --model gpt-4o https://www.youtube.com/live/DQacCB9tDaw
 EOF
 }
 
@@ -36,10 +38,34 @@ subs_dl() {
 }
 
 subs_clean() {
-  local url="$1"
+  local model="gpt-4o-mini"
+  local url=""
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      -m|--model)
+        if [ -z "${2:-}" ]; then
+          echo "Error: --model requires a value"
+          exit 1
+        fi
+        model="$2"
+        shift 2
+        ;;
+      *)
+        if [ -z "$url" ]; then
+          url="$1"
+        else
+          echo "Error: Unexpected argument: $1"
+          exit 1
+        fi
+        shift
+        ;;
+    esac
+  done
+
   if [ -z "$url" ]; then
     echo "Error: URL is required"
-    echo "Usage: subs clean <URL>"
+    echo "Usage: subs clean [--model MODEL] <URL>"
     exit 1
   fi
 
@@ -60,7 +86,7 @@ subs_clean() {
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -d "{
-      \"model\": \"gpt-4o-mini\",
+      \"model\": \"$model\",
       \"messages\": [
         {
           \"role\": \"system\",
@@ -98,7 +124,7 @@ case "$1" in
     ;;
   clean)
     shift
-    subs_clean "${1:-}"
+    subs_clean "$@"
     ;;
   *)
     echo "Error: Unknown command: $1"
