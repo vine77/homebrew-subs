@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+subs_dl() {
+  local url="$1"
+  if [ -z "$url" ]; then
+    echo "Usage: subs dl <URL>"
+    exit 1
+  fi
+
+  yt-dlp --quiet --no-warnings --skip-download --write-subs --write-auto-subs --sub-lang "en.*" "$url" \
+    && [ -f *.en-orig.vtt ] \
+    && sed -E "/-->|WEBVTT|^Kind:|^Language:|^[[:space:]]*$/d; s/<[^>]*>//g; s/^[[:space:]]+//; s/[[:space:]]+$//" *.en-orig.vtt \
+    | awk '!seen[$0]++' \
+    | tr "\n" " " \
+    && rm -f *.vtt || { echo "Error: Failed to process subtitles."; exit 1; }
+}
+
+subs_clean() {
+  local url="$1"
+  if [ -z "$url" ]; then
+    echo "Usage: subs clean <URL>"
+    exit 1
+  fi
+
+  if [ -z "${OPENAI_API_KEY:-}" ]; then
+    echo "Error: OPENAI_API_KEY is not set. Please export your API key."
+    exit 1
+  fi
+
+  transcript=$(subs_dl "$url")
+  if [ -z "$transcript" ]; then
+    echo "Error: Could not extract subtitles or no subtitles available."
+    exit 1
+  fi
+
+  escaped_transcript=$(jq -R -s '.' <<< "$transcript")
+
+  cleaned_transcript=$(curl -s "https://api.openai.com/v1/chat/completions" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $OPENAI_API_KEY" \
+    -d "{
+      \"model\": \"gpt-4\",
+      \"messages\": [
+        {
+          \"role\": \"system\",
+          \"content\": \"You are an expert copywriter that will be given captions from a video. Assume that what you are provided is the video's entire transcript. Carefully punctuate (without overusing exclamation points), add paragraph breaks, and fix the transcription, but without changing the original tone or phrasing. Do not summarize, truncate, or annotate. Simply output the entire revised transcript verbatim.\"
+        },
+        {
+          \"role\": \"user\",
+          \"content\": $escaped_transcript
+        }
+      ]
+    }" | jq -r '.choices[0].message.content')
+
+  if [ -n "$cleaned_transcript" ]; then
+    echo "$cleaned_transcript"
+  else
+    echo "Error: OpenAI API failed to process the transcript."
+    exit 1
+  fi
+}
+
+case "$1" in
+  dl)
+    subs_dl "$2"
+    ;;
+  clean)
+    subs_clean "$2"
+    ;;
+  *)
+    echo "Unknown command: $1"
+    echo "Usage: subs <dl|clean> <URL>"
+    exit 1
+    ;;
+esac
