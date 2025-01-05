@@ -5,15 +5,31 @@ Download subtitles with yt-dlp or clean them up with OpenAI
 ## Installation
 
 ```sh
-brew install vine77/subs
+brew install --HEAD vine77/subs/subs
 ```
 
-## Example usage
+Export your OpenAI API key if you want to use the `clean` command:
 
 ```sh
-subs dl https://www.youtube.com/watch?v=VUxMfyzTM_Y | pbcopy
+export OPENAI_API_KEY=sk-...
 ```
 
+## Usage
+
 ```sh
-subs clean https://www.youtube.com/watch?v=VUxMfyzTM_Y | pbcopy
+subs --help
+```
+
+## Examples
+
+Download auto-generated subtitles and copy to clipboard:
+
+```sh
+subs dl "https://www.youtube.com/watch?v=VUxMfyzTM_Y" | pbcopy
+```
+
+Download and clean up subtitles using gpt-4o-mini and copy to clipboard:
+
+```sh
+subs clean "https://www.youtube.com/watch?v=VUxMfyzTM_Y" | pbcopy
 ```
