@@ -2,9 +2,27 @@
 
 set -euo pipefail
 
+print_usage() {
+  cat << EOF
+Usage: subs <command> <URL>
+
+Commands:
+  dl      Download and extract subtitles from a video
+  clean   Download and clean up subtitles using OpenAI
+
+Options:
+  -h, --help     Show this help message
+
+Examples:
+  subs dl "https://www.youtube.com/watch?v=VUxMfyzTM_Y"
+  subs clean "https://www.youtube.com/watch?v=VUxMfyzTM_Y"
+EOF
+}
+
 subs_dl() {
   local url="$1"
   if [ -z "$url" ]; then
+    echo "Error: URL is required"
     echo "Usage: subs dl <URL>"
     exit 1
   fi
@@ -20,6 +38,7 @@ subs_dl() {
 subs_clean() {
   local url="$1"
   if [ -z "$url" ]; then
+    echo "Error: URL is required"
     echo "Usage: subs clean <URL>"
     exit 1
   fi
@@ -62,16 +81,28 @@ subs_clean() {
   fi
 }
 
+if [ $# -eq 0 ]; then
+  print_usage
+  exit 1
+fi
+
+if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
+  print_usage
+  exit 0
+fi
+
 case "$1" in
   dl)
-    subs_dl "$2"
+    shift
+    subs_dl "${1:-}"
     ;;
   clean)
-    subs_clean "$2"
+    shift
+    subs_clean "${1:-}"
     ;;
   *)
-    echo "Unknown command: $1"
-    echo "Usage: subs <dl|clean> <URL>"
+    echo "Error: Unknown command: $1"
+    print_usage
     exit 1
     ;;
 esac
