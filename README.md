@@ -25,11 +25,11 @@ subs --help
 Download auto-generated subtitles and copy to clipboard:
 
 ```sh
-subs dl "https://www.youtube.com/watch?v=VUxMfyzTM_Y" | pbcopy
+subs dl "https://www.youtube.com/live/DQacCB9tDaw" | pbcopy
 ```
 
 Download and clean up subtitles using gpt-4o-mini and copy to clipboard:
 
 ```sh
-subs clean "https://www.youtube.com/watch?v=VUxMfyzTM_Y" | pbcopy
+subs clean "https://www.youtube.com/live/DQacCB9tDaw" | pbcopy
 ```

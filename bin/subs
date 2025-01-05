@@ -14,8 +14,8 @@ Options:
   -h, --help     Show this help message
 
 Examples:
-  subs dl "https://www.youtube.com/watch?v=VUxMfyzTM_Y"
-  subs clean "https://www.youtube.com/watch?v=VUxMfyzTM_Y"
+  subs dl "https://www.youtube.com/live/DQacCB9tDaw"
+  subs clean "https://www.youtube.com/live/DQacCB9tDaw"
 EOF
 }
 
@@ -60,7 +60,7 @@ subs_clean() {
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -d "{
-      \"model\": \"gpt-4\",
+      \"model\": \"gpt-4o-mini\",
       \"messages\": [
         {
           \"role\": \"system\",
