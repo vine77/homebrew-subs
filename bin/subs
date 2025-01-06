@@ -3,6 +3,7 @@
 set -euo pipefail
 
 DEFAULT_MODEL="gpt-4o-mini"
+DEFAULT_TEMP=0.7
 
 print_usage() {
   cat << EOF
@@ -109,6 +110,7 @@ subs_clean() {
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -d "{
       \"model\": \"$model\",
+      \"temperature\": $DEFAULT_TEMP,
       \"messages\": [
         {
           \"role\": \"system\",
@@ -179,6 +181,7 @@ subs_condense() {
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -d "{
       \"model\": \"$model\",
+      \"temperature\": $DEFAULT_TEMP,
       \"messages\": [
         {
           \"role\": \"system\",
@@ -249,10 +252,11 @@ subs_summarize() {
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -d "{
       \"model\": \"$model\",
+      \"temperature\": $DEFAULT_TEMP,
       \"messages\": [
         {
           \"role\": \"system\",
-          \"content\": \"You are an expert copywriter that will be given captions from a video. (Assume what you are provided is the video's entire transcript.) Summarize the transcript by presenting the key points and insights, while maintaining the flow, tone, intent, and voice of the original author, presented from their point of view. Focus on the most valuable information while maintaining accuracy faithful to the original. Output in paragraph form.\"
+          \"content\": \"You are an expert copywriter that will be given captions from a video. Summarize the transcript by presenting the key points and insights, while maintaining the flow, tone, intent, detail, and voice of the original author, presented from their point of view. Make it brief by focusing on the most valuable information while staying faithful to the original. Output in paragraph form.\"
         },
         {
           \"role\": \"user\",
