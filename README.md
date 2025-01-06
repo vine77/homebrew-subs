@@ -48,8 +48,6 @@ subs summarize "https://www.youtube.com/live/DQacCB9tDaw"
 
 ## Contributing
 
-PRs welcome.
-
 Clone the repo, e.g.:
 
 ```sh

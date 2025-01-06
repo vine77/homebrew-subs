@@ -13,7 +13,7 @@ Commands:
   dl         Download and extract subtitles from a video
   clean      Clean up subtitles using OpenAI
   condense   Create a condensed version of subtitles using OpenAI
-  summarize  Extract key points and insights from subtitles using OpenAI
+  summarize  Create a summary of subtitles using OpenAI
 
 Options:
   -h, --help            Show this help message
@@ -22,9 +22,9 @@ Options:
 Examples:
   subs dl "https://www.youtube.com/live/DQacCB9tDaw"
   subs clean "https://www.youtube.com/live/DQacCB9tDaw"
-  subs clean --model gpt-4o "https://www.youtube.com/live/DQacCB9tDaw"
   subs condense "https://www.youtube.com/live/DQacCB9tDaw"
   subs summarize "https://www.youtube.com/live/DQacCB9tDaw"
+  subs summarize --model gpt-4o "https://www.youtube.com/live/DQacCB9tDaw"
 EOF
 }
 
