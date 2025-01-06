@@ -1,6 +1,6 @@
 # subs
 
-Download subtitles with yt-dlp or clean them up with OpenAI
+Download subtitles with yt-dlp and clean, condense, or summarize them with OpenAI
 
 ## Installation
 
@@ -8,7 +8,7 @@ Download subtitles with yt-dlp or clean them up with OpenAI
 brew install --HEAD vine77/subs/subs
 ```
 
-Export your OpenAI API key if you want to use the `clean` command:
+Export your OpenAI API key if you want to use the `clean`, `condense`, or `summarize` commands:
 
 ```sh
 export OPENAI_API_KEY=sk-...
@@ -22,20 +22,20 @@ subs --help
 
 ## Examples
 
-Download auto-generated subtitles and copy to clipboard:
+Download (manual or otherwise auto-generated) subtitles and copy to clipboard:
 
 ```sh
-subs dl https://www.youtube.com/live/DQacCB9tDaw | pbcopy
+subs dl "https://www.youtube.com/live/DQacCB9tDaw" | pbcopy
 ```
 
 Download and clean up subtitles using gpt-4o-mini and copy to clipboard:
 
 ```sh
-subs clean https://www.youtube.com/live/DQacCB9tDaw | pbcopy
+subs clean "https://www.youtube.com/live/DQacCB9tDaw" | pbcopy
 ```
 
-Use a different OpenAI model:
+Generate a condensed version of video subtitles:
 
 ```sh
-subs clean --model gpt-4o https://www.youtube.com/live/DQacCB9tDaw | pbcopy
+subs condense "https://www.youtube.com/live/DQacCB9tDaw"
 ```
