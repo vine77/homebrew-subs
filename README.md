@@ -39,3 +39,21 @@ Generate a condensed version of video subtitles:
 ```sh
 subs condense "https://www.youtube.com/live/DQacCB9tDaw"
 ```
+
+## Contributing
+
+PRs welcome.
+
+Clone the repo, e.g.:
+
+```sh
+gh repo clone vine77/homebrew-subs && cd homebrew-subs
+```
+
+Then try it out, e.g.:
+
+```sh
+./bin/subs clean "https://www.youtube.com/live/DQacCB9tDaw" | pbcopy
+```
+
+The prompt engineering is currently just through trial and error. I'm also interested in creating a JavaScript-only YouTube-only version of this, e.g. via [youtube-captions-scraper](https://github.com/algolia/youtube-captions-scraper).
