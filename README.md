@@ -40,6 +40,12 @@ Generate a condensed version of video subtitles:
 subs condense "https://www.youtube.com/live/DQacCB9tDaw"
 ```
 
+Generate a summary of video subtitles:
+
+```sh
+subs summarize "https://www.youtube.com/live/DQacCB9tDaw"
+```
+
 ## Contributing
 
 PRs welcome.
