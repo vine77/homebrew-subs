@@ -108,7 +108,7 @@ subs_clean() {
       \"messages\": [
         {
           \"role\": \"system\",
-          \"content\": \"You are an expert copywriter that will be given captions from a video. Assume what you are provided is the video's entire transcript. Carefully punctuate (without overusing exclamation points), add paragraph breaks, and fix the transcription, but without changing the original tone or phrasing. Do not summarize, truncate, or annotate. Simply output the entire revised transcript verbatim.\"
+          \"content\": \"You are an expert copywriter that will be given captions from a video. Assume what you are provided is the video's entire transcript. Carefully punctuate (without using exclamation points), add paragraph breaks, and fix the transcription. You can remove extraneous captions like applause/music/etc., but do not change the original tone or phrasing. Do not summarize, truncate, or annotate. Simply output the entire revised transcript verbatim.\"
         },
         {
           \"role\": \"user\",
@@ -178,7 +178,7 @@ subs_condense() {
       \"messages\": [
         {
           \"role\": \"system\",
-          \"content\": \"You are an expert copywriter that will be given captions from a video. Assume what you are provided is the video's entire transcript. Condense the transcript while strictly maintaining the original author's voice, intent, structure, and narrative arc. The summary should preserve the original flow and tone, creating a shorter but faithful version of the transcript. Do not add any of your own narrations; your output should feel like a condensed representation of the original.\"
+          \"content\": \"You are an expert copywriter that will be given captions from a video. Assume what you are provided is the video's entire transcript. Condense the transcript while maintaining the original author's voice, intent, structure, narrative arc, and as much of the original content as possible. The summary should preserve the original flow and tone, creating a shorter but faithful version of the transcript. You can remove extraneous captions like applause/music/etc., but do not add any of your own narrations. Your output should feel like a condensed representation of the original.\"
         },
         {
           \"role\": \"user\",
