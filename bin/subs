@@ -60,6 +60,27 @@ subs_dl() {
     && rm -f *.vtt || { echo "Error: Failed to process subtitles."; exit 1; }
 }
 
+get_video_info() {
+  local url="$1"
+  local info
+
+  # Get info in JSON format and parse with jq
+  info=$(yt-dlp --quiet --no-warnings --dump-json "$url" | jq -r '[.title, .uploader, .description] | @tsv')
+
+  # Read using tab as separator
+  IFS=$'\t' read -r title uploader description <<< "$info"
+
+  # Handle empty fields gracefully
+  title=${title:-"Untitled"}
+  uploader=${uploader:-"Unknown"}
+  description=${description:-"No description available"}
+
+  # Use echo -e to interpret escape sequences in the description
+  description=$(echo -e "$description")
+
+  printf '# "%s" by %s\n\n## Description\n\n%s\n\n---\n\n' "$title" "$uploader" "$description"
+}
+
 subs_clean() {
   local model="$DEFAULT_MODEL"
   local url=""
@@ -97,11 +118,20 @@ subs_clean() {
     exit 1
   fi
 
+  local info
+  info=$(get_video_info "$url")
+  if [ -z "$info" ]; then
+    echo "Error: Could not get video information."
+    exit 1
+  fi
+
   transcript=$(subs_dl "$url")
   if [ -z "$transcript" ]; then
     echo "Error: Could not extract subtitles or no subtitles available."
     exit 1
   fi
+
+  transcript=$(printf '%s\n\n## Transcript\n\n%s' "$info" "$transcript")
 
   escaped_transcript=$(jq -R -s '.' <<< "$transcript")
 
@@ -114,7 +144,7 @@ subs_clean() {
       \"messages\": [
         {
           \"role\": \"system\",
-          \"content\": \"You are an expert copywriter that will be given captions from a video. Assume what you are provided is the video's entire transcript. Carefully punctuate (without using exclamation points), add paragraph breaks, and fix the transcription. You can remove extraneous captions like applause/music/etc., but do not change the original tone or phrasing. Do not summarize, truncate, or annotate. Simply output the entire revised transcript verbatim.\"
+          \"content\": \"You are an expert copywriter that will be given a video title and description for context, then the captions from the video transcript. Exclude the title and description, just taking the transcript. Carefully punctuate (without using exclamation points), add paragraph breaks, and fix the transcription. You can remove extraneous captions like applause/music/etc., but do not change the original tone or phrasing. Do not summarize, truncate, or annotate. Simply output the entire revised transcript verbatim.\"
         },
         {
           \"role\": \"user\",
@@ -168,11 +198,20 @@ subs_condense() {
     exit 1
   fi
 
+  local info
+  info=$(get_video_info "$url")
+  if [ -z "$info" ]; then
+    echo "Error: Could not get video information."
+    exit 1
+  fi
+
   transcript=$(subs_dl "$url")
   if [ -z "$transcript" ]; then
     echo "Error: Could not extract subtitles or no subtitles available."
     exit 1
   fi
+
+  transcript=$(printf '%s\n\n## Transcript\n\n%s' "$info" "$transcript")
 
   escaped_transcript=$(jq -R -s '.' <<< "$transcript")
 
@@ -185,7 +224,7 @@ subs_condense() {
       \"messages\": [
         {
           \"role\": \"system\",
-          \"content\": \"You are an expert copywriter that will be given captions from a video. Assume what you are provided is the video's entire transcript. Condense the transcript while maintaining the original author's voice, intent, structure, narrative arc, and as much of the original content as possible. The summary should preserve the original flow and tone, creating a shorter but faithful version of the transcript. You can remove extraneous captions like applause/music/etc., but do not add any of your own narrations. Your output should feel like a condensed representation of the original.\"
+          \"content\": \"You are an expert copywriter that will be given a video title and description for context, then the captions from the video transcript. Exclude the title and description, just taking the transcript. Fix the transcription, then condense the transcript while maintaining the original author's voice, intent, structure, narrative arc, and as much of the original content as possible. The summary should preserve the original flow and tone, creating a shorter but faithful version of the transcript. You can remove extraneous captions like applause/music/etc., but do not add any of your own narrations. Your output should feel like a condensed representation of the original.\"
         },
         {
           \"role\": \"user\",
@@ -239,11 +278,20 @@ subs_summarize() {
     exit 1
   fi
 
+  local info
+  info=$(get_video_info "$url")
+  if [ -z "$info" ]; then
+    echo "Error: Could not get video information."
+    exit 1
+  fi
+
   transcript=$(subs_dl "$url")
   if [ -z "$transcript" ]; then
     echo "Error: Could not extract subtitles or no subtitles available."
     exit 1
   fi
+
+  transcript=$(printf '%s\n\n## Transcript\n\n%s' "$info" "$transcript")
 
   escaped_transcript=$(jq -R -s '.' <<< "$transcript")
 
@@ -256,7 +304,7 @@ subs_summarize() {
       \"messages\": [
         {
           \"role\": \"system\",
-          \"content\": \"You are an expert copywriter that will be given captions from a video. Summarize the transcript by presenting the key points and insights, while maintaining the flow, tone, intent, detail, and voice of the original author, presented from their point of view. Make it brief by focusing on the most valuable information while staying faithful to the original. Output in paragraph form.\"
+          \"content\": \"You are an expert copywriter that will be given a video title and description for context, then the captions from the video transcript. Exclude the title and description, just taking the transcript. Summarize the transcript by presenting the key points and insights, while maintaining the flow, tone, intent, detail, and voice of the original author, presented from their point of view, though please fix mistranscriptions. Make it brief by focusing on the most valuable information while staying faithful to the original. Output in paragraph form.\"
         },
         {
           \"role\": \"user\",
