@@ -29,9 +29,25 @@ subs_dl() {
     exit 1
   fi
 
-  yt-dlp --quiet --no-warnings --skip-download --write-subs --write-auto-subs --sub-lang "en.*" "$url" \
-    && [ -f *.en-orig.vtt ] \
-    && sed -E "/-->|WEBVTT|^Kind:|^Language:|^[[:space:]]*$/d; s/<[^>]*>//g; s/^[[:space:]]+//; s/[[:space:]]+$//" *.en-orig.vtt \
+  # First try to get manual subtitles only
+  yt-dlp --quiet --no-warnings --skip-download --write-subs --sub-lang "en.*" "$url" || true
+
+  # Check if we got any English subtitles
+  if ! ls *.en*.vtt >/dev/null 2>&1; then
+    # If no manual subtitles found, try auto-generated ones
+    yt-dlp --quiet --no-warnings --skip-download --write-subs --write-auto-subs --sub-lang "en.*" "$url" || true
+
+    if ! ls *.en*.vtt >/dev/null 2>&1; then
+      echo "Error: No subtitles found."
+      exit 1
+    fi
+  fi
+
+  # Process the first available subtitle file
+  local vtt_file
+  vtt_file=$(ls -1 *.en*.vtt 2>/dev/null | head -n 1)
+
+  sed -E "/-->|WEBVTT|^Kind:|^Language:|^[[:space:]]*$/d; s/<[^>]*>//g; s/^[[:space:]]+//; s/[[:space:]]+$//" "$vtt_file" \
     | awk '!seen[$0]++' \
     | tr "\n" " " \
     && rm -f *.vtt || { echo "Error: Failed to process subtitles."; exit 1; }
