@@ -8,10 +8,10 @@ Download subtitles with yt-dlp and clean, condense, or summarize them with OpenA
 brew install --HEAD vine77/subs/subs
 ```
 
-Export your OpenAI API key if you want to use the `clean`, `condense`, or `summarize` commands:
+Export your OpenAI API key if you want to use the `clean`, `condense`, or `summarize` commands. You can use either `SUBS_OPENAI_API_KEY` or `OPENAI_API_KEY`:
 
 ```sh
-export OPENAI_API_KEY=sk-...
+export SUBS_OPENAI_API_KEY=sk-...
 ```
 
 ## Usage
