@@ -5,6 +5,16 @@ set -euo pipefail
 DEFAULT_MODEL="gpt-4o-mini"
 DEFAULT_TEMP=0.7
 
+get_api_key() {
+  if [ -n "${SUBS_OPENAI_API_KEY:-}" ]; then
+    echo "$SUBS_OPENAI_API_KEY"
+  elif [ -n "${OPENAI_API_KEY:-}" ]; then
+    echo "$OPENAI_API_KEY"
+  else
+    echo ""
+  fi
+}
+
 print_usage() {
   cat << EOF
 Usage: subs <command> [options] <URL>
@@ -113,8 +123,10 @@ subs_clean() {
     exit 1
   fi
 
-  if [ -z "${OPENAI_API_KEY:-}" ]; then
-    echo "Error: OPENAI_API_KEY is not set. Please export your API key."
+  local api_key
+  api_key=$(get_api_key)
+  if [ -z "$api_key" ]; then
+    echo "Error: Neither SUBS_OPENAI_API_KEY nor OPENAI_API_KEY is set. Please export an API key."
     exit 1
   fi
 
@@ -137,7 +149,7 @@ subs_clean() {
 
   output=$(curl -s "https://api.openai.com/v1/chat/completions" \
     -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $OPENAI_API_KEY" \
+    -H "Authorization: Bearer $api_key" \
     -d "{
       \"model\": \"$model\",
       \"temperature\": $DEFAULT_TEMP,
@@ -193,8 +205,10 @@ subs_condense() {
     exit 1
   fi
 
-  if [ -z "${OPENAI_API_KEY:-}" ]; then
-    echo "Error: OPENAI_API_KEY is not set. Please export your API key."
+  local api_key
+  api_key=$(get_api_key)
+  if [ -z "$api_key" ]; then
+    echo "Error: Neither SUBS_OPENAI_API_KEY nor OPENAI_API_KEY is set. Please export an API key."
     exit 1
   fi
 
@@ -217,7 +231,7 @@ subs_condense() {
 
   output=$(curl -s "https://api.openai.com/v1/chat/completions" \
     -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $OPENAI_API_KEY" \
+    -H "Authorization: Bearer $api_key" \
     -d "{
       \"model\": \"$model\",
       \"temperature\": $DEFAULT_TEMP,
@@ -273,8 +287,10 @@ subs_summarize() {
     exit 1
   fi
 
-  if [ -z "${OPENAI_API_KEY:-}" ]; then
-    echo "Error: OPENAI_API_KEY is not set. Please export your API key."
+  local api_key
+  api_key=$(get_api_key)
+  if [ -z "$api_key" ]; then
+    echo "Error: Neither SUBS_OPENAI_API_KEY nor OPENAI_API_KEY is set. Please export an API key."
     exit 1
   fi
 
@@ -297,7 +313,7 @@ subs_summarize() {
 
   output=$(curl -s "https://api.openai.com/v1/chat/completions" \
     -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $OPENAI_API_KEY" \
+    -H "Authorization: Bearer $api_key" \
     -d "{
       \"model\": \"$model\",
       \"temperature\": $DEFAULT_TEMP,
