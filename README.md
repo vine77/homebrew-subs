@@ -60,4 +60,12 @@ Then try it out, e.g.:
 ./bin/subs clean "https://www.youtube.com/live/DQacCB9tDaw" | pbcopy
 ```
 
-The prompt engineering is currently just through trial and error. I'm also interested in creating a JavaScript-only YouTube-only version of this, e.g. via [youtube-captions-scraper](https://github.com/algolia/youtube-captions-scraper).
+### Notes
+
+- The "prompt engineering" is currently just through trial and error.
+
+### Ideas
+
+- Cache subtitles to avoid re-downloading VTTs if user asks about the same video again.
+- A JavaScript-only YouTube-only version of this, e.g. via [youtube-captions-scraper](https://github.com/algolia/youtube-captions-scraper), could enable use for web/extensions.
+- Perhaps beyond the scope of the project, but for videos heavy on text/slides/code, it could be a cool feature to allow it to extract text from screenshots (e.g. like via ffmpeg scene detection and a vision model).
